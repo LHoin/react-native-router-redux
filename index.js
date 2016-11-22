@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import { Navigator, StyleSheet, View } from 'react-native';
 import Animations from './src/Animations';
 import { NavBar } from './src/NavBar';
@@ -182,10 +181,21 @@ class Router extends React.Component {
           initialRoute={this.getRoute(this.initialRoute, this.props.router)}
           ref={(nav) => this.nav = nav}
           renderScene={this.renderScene.bind(this)}
+          onDidFocus={this.onDidFocus.bind(this)}
         />
         {footer}
       </View>
     );
+  }
+
+  onDidFocus() {
+    let instance = this.comp;
+    if (instance.getWrappedInstance) {
+      instance = instance.getWrappedInstance();
+    }
+    if (instance.onTranstionCompleted) {
+      instance.onTranstionCompleted.apply(instance, arguments);
+    }
   }
 
   renderScene(route, navigator) {
@@ -208,6 +218,7 @@ class Router extends React.Component {
     if (Component) {
       child = (
         <Component
+          ref={(comp) => this.comp = comp}
           key={route.name}
           {...props}
           {...route.passProps}
